@@ -105,14 +105,6 @@ resource "aws_route" "private_nat_gateway" {
   nat_gateway_id         = aws_nat_gateway.main[count.index].id
 }
 
-resource "aws_route" "private_nat_instance" {
-  count = var.enable_nat_instance && !var.enable_nat_gateway ? length(var.private_subnet_cidrs) : 0
-  
-  route_table_id         = aws_route_table.private[count.index].id
-  destination_cidr_block = "0.0.0.0/0"
-  instance_id            = aws_instance.nat[0].id
-}
-
 resource "aws_route_table_association" "private" {
   count = length(aws_subnet.private)
   
