@@ -1,5 +1,3 @@
-
-# OIDC Provider for GitHub Actions
 resource "aws_iam_openid_connect_provider" "github_oidc" {
   url = "https://token.actions.githubusercontent.com"
 
@@ -40,7 +38,6 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
-# Attach policies to GitHub Actions role
 resource "aws_iam_role_policy_attachment" "github_actions_ec2" {
   role       = aws_iam_role.github_actions_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"

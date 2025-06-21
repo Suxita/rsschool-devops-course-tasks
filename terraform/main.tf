@@ -1,4 +1,3 @@
-# S3 Bucket for application/additional resources
 resource "aws_s3_bucket" "app_bucket" {
   bucket = "${var.project_name}-app-bucket-${random_string.bucket_suffix.result}"
 }

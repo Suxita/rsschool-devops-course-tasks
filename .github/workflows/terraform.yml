@@ -1,8 +1,7 @@
 name: 'Terraform'
-
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "task_2" ]  # Add task_2 here
   pull_request:
     branches: [ "main" ]
 
@@ -22,12 +21,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
-    
+   
     - name: Terraform Format Check
       run: |
         cd terraform
@@ -40,28 +39,28 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+   
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
         aws-region: ${{ env.AWS_REGION }}
-    
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
-    
+   
     - name: Terraform Init
       run: |
         cd terraform
         terraform init
-    
+   
     - name: Terraform Validate
       run: |
         cd terraform
         terraform validate
-    
+   
     - name: Terraform Plan
       run: |
         cd terraform
@@ -76,23 +75,23 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+   
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
         aws-region: ${{ env.AWS_REGION }}
-    
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
-    
+   
     - name: Terraform Init
       run: |
         cd terraform
         terraform init
-    
+   
     - name: Terraform Apply
       run: |
         cd terraform
