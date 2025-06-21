@@ -1,4 +1,3 @@
-# Get the latest Amazon Linux 2 AMI
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]

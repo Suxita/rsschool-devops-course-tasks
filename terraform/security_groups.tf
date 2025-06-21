@@ -48,10 +48,10 @@ resource "aws_security_group" "nat_instance" {
   }
 
   ingress {
-    description = "SSH from bastion"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [aws_security_group.bastion.id]
   }
 
@@ -74,10 +74,10 @@ resource "aws_security_group" "private_instances" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "SSH from bastion"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [aws_security_group.bastion.id]
   }
 

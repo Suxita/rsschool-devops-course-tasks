@@ -1,7 +1,7 @@
 resource "aws_key_pair" "main" {
   key_name   = "${var.project_name}-key"
   public_key = file("~/.ssh/id_rsa.pub") # You'll need to generate this
-  
+
   tags = {
     Name = "${var.project_name}-key"
   }
@@ -9,10 +9,10 @@ resource "aws_key_pair" "main" {
 
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.amazon_linux.id
-  instance_type              = var.bastion_instance_type
-  key_name                   = aws_key_pair.main.key_name
-  vpc_security_group_ids     = [aws_security_group.bastion.id]
-  subnet_id                  = aws_subnet.public[0].id
+  instance_type               = var.bastion_instance_type
+  key_name                    = aws_key_pair.main.key_name
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
+  subnet_id                   = aws_subnet.public[0].id
   associate_public_ip_address = true
 
   tags = {
@@ -24,11 +24,11 @@ resource "aws_instance" "nat" {
   count = var.enable_nat_instance && !var.enable_nat_gateway ? 1 : 0
 
   ami                    = data.aws_ami.nat_instance.id
-  instance_type         = var.nat_instance_type
-  key_name              = aws_key_pair.main.key_name
+  instance_type          = var.nat_instance_type
+  key_name               = aws_key_pair.main.key_name
   vpc_security_group_ids = [aws_security_group.nat_instance[0].id]
-  subnet_id             = aws_subnet.public[0].id
-  source_dest_check     = false
+  subnet_id              = aws_subnet.public[0].id
+  source_dest_check      = false
 
   user_data = <<-EOF
     #!/bin/bash

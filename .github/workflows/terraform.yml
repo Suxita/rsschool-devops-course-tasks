@@ -1,7 +1,7 @@
 name: 'Terraform'
 on:
   push:
-    branches: [ "main", "task_2" ]  # Add task_2 here
+    branches: [ "main", "task_2" ]  
   pull_request:
     branches: [ "main" ]
 
