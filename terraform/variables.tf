@@ -3,25 +3,17 @@ variable "aws_region" {
   type        = string
   default     = "eu-central-1"
 }
-variable "ssh_public_key" {
-  description = "SSH public key for EC2 instances"
-  type        = string
-}
-variable "github_repo" {
-  description = "GitHub repository name"
-  type        = string
-  default     = "rsschool-devops-course-tasks"
-}
 
 variable "project_name" {
-  description = "Project name for resource naming"
+  description = "Name of the project"
   type        = string
   default     = "rsschool-devops"
 }
-variable "github_org" {
-  description = "GitHub username"
+
+variable "environment" {
+  description = "Environment name"
   type        = string
-  default     = "Suxita"
+  default     = "dev"
 }
 
 variable "vpc_cidr" {
@@ -49,31 +41,44 @@ variable "availability_zones" {
 }
 
 variable "bastion_instance_type" {
-  description = "EC2 instance type for bastion host"
+  description = "Instance type for bastion host"
   type        = string
   default     = "t3.micro"
 }
 
 variable "nat_instance_type" {
-  description = "EC2 instance type for NAT instance"
+  description = "Instance type for NAT instance"
   type        = string
   default     = "t3.micro"
 }
 
-variable "enable_nat_gateway" {
-  description = "Enable NAT Gateway instead of NAT instance (more expensive but managed)"
-  type        = bool
-  default     = false
-}
-
-variable "ssh_allowed_cidr" {
-  description = "CIDR block allowed to SSH to bastion host"
+variable "key_pair_name" {
+  description = "Name of the AWS key pair"
   type        = string
-  default     = "0.0.0.0/0"
+  default     = "rsschool-devops-key"
 }
 
-variable "enable_nat_instance" {
-  description = "Enable NAT Instance for private subnets (cheaper alternative)"
+variable "enable_nat_gateway" {
+  description = "Enable NAT Gateway instead of NAT instance"
   type        = bool
   default     = false
+}
+
+variable "allowed_ssh_cidrs" {
+  description = "CIDR blocks allowed to SSH to bastion host"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+# Legacy variables for compatibility
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "rsschool-devops-course-tasks"
+}
+
+variable "github_org" {
+  description = "GitHub username"
+  type        = string
+  default     = "Suxita"
 }

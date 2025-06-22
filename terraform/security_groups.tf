@@ -1,14 +1,15 @@
+# Bastion Host Security Group
 resource "aws_security_group" "bastion" {
   name        = "${var.project_name}-bastion-sg"
   description = "Security group for bastion host"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "SSH from anywhere"
+    description = "SSH from allowed CIDRs"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.ssh_allowed_cidr]
+    cidr_blocks = var.allowed_ssh_cidrs
   }
 
   egress {
@@ -20,13 +21,14 @@ resource "aws_security_group" "bastion" {
   }
 
   tags = {
-    Name = "${var.project_name}-bastion-sg"
+    Name        = "${var.project_name}-bastion-sg"
+    Environment = var.environment
   }
 }
 
-resource "aws_security_group" "nat_instance" {
-  count = var.enable_nat_gateway ? 0 : 1
-
+# NAT Instance Security Group
+resource "aws_security_group" "nat" {
+  count       = var.enable_nat_gateway ? 0 : 1
   name        = "${var.project_name}-nat-instance-sg"
   description = "Security group for NAT instance"
   vpc_id      = aws_vpc.main.id
@@ -64,11 +66,13 @@ resource "aws_security_group" "nat_instance" {
   }
 
   tags = {
-    Name = "${var.project_name}-nat-instance-sg"
+    Name        = "${var.project_name}-nat-instance-sg"
+    Environment = var.environment
   }
 }
 
-resource "aws_security_group" "private_instances" {
+# Private Instances Security Group
+resource "aws_security_group" "private" {
   name        = "${var.project_name}-private-instances-sg"
   description = "Security group for instances in private subnets"
   vpc_id      = aws_vpc.main.id
@@ -98,21 +102,23 @@ resource "aws_security_group" "private_instances" {
   }
 
   tags = {
-    Name = "${var.project_name}-private-instances-sg"
+    Name        = "${var.project_name}-private-instances-sg"
+    Environment = var.environment
   }
 }
 
-resource "aws_security_group" "public_instances" {
+# Public Instances Security Group
+resource "aws_security_group" "public" {
   name        = "${var.project_name}-public-instances-sg"
   description = "Security group for instances in public subnets"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "SSH from anywhere"
+    description = "SSH from allowed CIDRs"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.ssh_allowed_cidr]
+    cidr_blocks = var.allowed_ssh_cidrs
   }
 
   ingress {
@@ -148,6 +154,7 @@ resource "aws_security_group" "public_instances" {
   }
 
   tags = {
-    Name = "${var.project_name}-public-instances-sg"
+    Name        = "${var.project_name}-public-instances-sg"
+    Environment = var.environment
   }
 }
