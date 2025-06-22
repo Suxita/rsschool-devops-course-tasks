@@ -64,7 +64,7 @@ jobs:
     - name: Terraform Plan
       run: |
         cd terraform
-        terraform plan -no-color
+        terraform plan -no-color -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
       continue-on-error: true
 
   terraform-apply:
@@ -95,4 +95,4 @@ jobs:
     - name: Terraform Apply
       run: |
         cd terraform
-        terraform apply -auto-approve
+        terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
