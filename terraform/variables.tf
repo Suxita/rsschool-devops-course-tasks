@@ -3,7 +3,10 @@ variable "aws_region" {
   type        = string
   default     = "eu-central-1"
 }
-
+variable "ssh_public_key" {
+  description = "SSH public key for EC2 instances"
+  type        = string
+}
 variable "github_repo" {
   description = "GitHub repository name"
   type        = string

@@ -40,8 +40,6 @@ resource "aws_instance" "nat" {
     service iptables save
   EOF
 
-  tags = {
-    Name = "${var.project_name}-nat-instance"
-  }
-}
 
+
+}
