@@ -1,8 +1,7 @@
 name: 'Terraform'
-
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "task_2" ]  
   pull_request:
     branches: [ "main" ]
 
@@ -22,12 +21,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
-    
+   
     - name: Terraform Format Check
       run: |
         cd terraform
@@ -40,32 +39,32 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+   
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
         aws-region: ${{ env.AWS_REGION }}
-    
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
-    
+   
     - name: Terraform Init
       run: |
         cd terraform
         terraform init
-    
+   
     - name: Terraform Validate
       run: |
         cd terraform
         terraform validate
-    
+   
     - name: Terraform Plan
       run: |
         cd terraform
-        terraform plan -no-color
+        terraform plan -no-color -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
       continue-on-error: true
 
   terraform-apply:
@@ -76,24 +75,24 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+   
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
         aws-region: ${{ env.AWS_REGION }}
-    
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
-    
+   
     - name: Terraform Init
       run: |
         cd terraform
         terraform init
-    
+   
     - name: Terraform Apply
       run: |
         cd terraform
-        terraform apply -auto-approve
+        terraform apply -auto-approve -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
