@@ -1,0 +1,47 @@
+controller:
+  admin:
+    username: "admin"
+    password: "admin123"
+  
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: "standard"
+  
+  serviceType: NodePort
+  nodePort: 32000
+  
+  # Enable JCasC
+  JCasC:
+    enabled: true
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: "Welcome to Jenkins with JCasC!"
+      
+      hello-world-job: |
+        jobs:
+          - script: >
+              freeStyleJob('hello-world') {
+                description('A simple Hello World job created via JCasC')
+                steps {
+                  shell('echo "Hello World from JCasC!"')
+                }
+              }
+
+  # Install plugins
+  installPlugins:
+    - kubernetes:latest
+    - workflow-job:latest
+    - workflow-cps:latest
+    - workflow-scm-step:latest
+    - configuration-as-code:latest
+    - job-dsl:latest
+
+agent:
+  enabled: false
+
+persistence:
+  enabled: true
+  size: 8Gi
+  storageClass: "standard"
