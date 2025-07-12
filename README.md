@@ -1,216 +1,96 @@
-# Task 4: Jenkins Installation and Configuration
+# Task 5: Simple Application Deployment with Helm
 
-## Overview
-
-This project demonstrates the installation and configuration of Jenkins on a local Kubernetes cluster using Minikube and Helm. The setup includes persistent storage, Jenkins Configuration as Code (JCasC), and automated job creation.
+This project demonstrates the deployment of a simple Python Flask application to a local Kubernetes cluster (Minikube) using a Helm chart.
 
 ## Prerequisites
 
-- Windows 10/11 with Docker Desktop or Hyper-V enabled
-- Administrative privileges
-- At least 4GB RAM available for Minikube
-- Git installed
+* **PowerShell**: For running deployment scripts on Windows.
+* **Git**: For version control.
+* **Docker**: For containerizing the application.
+* **Minikube**: To run a local Kubernetes cluster.
+* **Helm**: For managing the Kubernetes deployment.
 
-## Installation Steps
+---
 
-### 1. Install Minikube
+## Project Structure
 
-```powershell
-choco install minikube
-
-minikube start --memory=4096 --cpus=2 --driver=docker
-
-minikube status
-kubectl cluster-info
+```
+.
+|   deploy.ps1
+|   setup-host.ps1
+|   README.md
+|
++---app/
+|       app.py
+|       Dockerfile
+|       requirements.txt
+|
+\---helm-chart/
+    |   Chart.yaml
+    |   values.yaml
+    |
+    \---templates/
+            deployment.yaml
+            ingress.yaml
+            service.yaml
+            _helpers.tpl
 ```
 
-### 2. Install and Verify Helm
+---
 
-```powershell
-choco install kubernetes-helm
+## Setup and Deployment
 
-helm version
+### Step 1: Clone the Repository
 
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-helm install test-nginx bitnami/nginx
-helm uninstall test-nginx
+Clone this repository to your local machine.
+
+```sh
+git clone <your-repo-url>
+cd <your-repo-directory>
 ```
 
-### 3. Prepare Persistent Storage
+### Step 2: Run the Deployment Script
 
-Minikube includes a default storage provisioner. Verify it's available:
+Open PowerShell, navigate to the project's root directory, and execute the `deploy.ps1` script. This script automates the entire process:
 
-```powershell
-kubectl get storageclass
-```
-
-### 4. Install Jenkins
-
-```powershell
-kubectl create namespace jenkins
-
-helm repo add jenkins https://charts.jenkins.io
-helm repo update
-
-helm install jenkins jenkins/jenkins -n jenkins -f helm/jenkins_values.yaml
-```
-
-### 5. Access Jenkins
+1.  Starts Minikube and enables the ingress addon.
+2.  Builds the `flask-app` Docker image within the Minikube environment.
+3.  Creates the `flask-app` namespace in Kubernetes.
+4.  Deploys the application using the Helm chart.
+5.  Verifies that the deployment has rolled out successfully.
 
 ```powershell
-minikube service jenkins -n jenkins --url
-
-kubectl port-forward -n jenkins svc/jenkins 8080:8080
+.\deploy.ps1
 ```
 
-**Default Credentials:**
-- Username: `admin`
-- Password: `admin123`
+### Step 3: Update Your Hosts File
 
-## Configuration Details
+To access the application at `http://flask-app.local`, you must map the Minikube IP to this hostname.
 
-### Jenkins Helm Values Configuration
-
-The `jenkins_values.yaml` file includes:
-
-- **Persistent Storage**: 8Gi volume with `standard` storage class
-- **Service Type**: NodePort for easy access
-- **JCasC**: Enabled with automatic job creation
-- **Essential Plugins**: Kubernetes, Workflow, Configuration-as-Code
-- **Security**: Custom admin credentials
-- **Agent**: Disabled (using built-in node only)
-
-### Jenkins Configuration as Code (JCasC)
-
-The setup automatically creates:
-- Welcome message: "Welcome to Jenkins with JCasC!"
-- Hello World job: Freestyle project that echoes "Hello World from JCasC!"
-
-## Verification
-
-### 1. Check Cluster Resources
+Run the `setup-host.ps1` script in a new **Administrator** PowerShell session.
 
 ```powershell
-kubectl get all --all-namespaces
+.\setup-host.ps1
 ```
 
-Expected output includes:
-- Jenkins pod in `Running` state (2/2 containers ready)
-- Jenkins services (NodePort and ClusterIP)
-- Jenkins StatefulSet with 1/1 replicas ready
+### Step 4: Access the Application
 
-### 2. Check Persistent Volumes
+Open your web browser and navigate site:
 
-```powershell
-kubectl get pv
-kubectl get pvc -n jenkins
-```
-
-Expected output:
-- Persistent Volume: `Bound` status, 8Gi capacity
-- Persistent Volume Claim: `Bound` to jenkins namespace
-
-### 3. Verify Jenkins Functionality
-
-1. Access Jenkins web interface
-2. Navigate to "hello-world" job (auto-created via JCasC)
-3. Click "Build Now"
-4. Check Console Output for "Hello World from JCasC!" message
+You should see the message: `Hello, World!`
 
 
-## Security Configuration
-
-### Basic Security Settings
-
-- **Authentication**: Jenkins' own user database
-- **Authorization**: Matrix-based security (can be enhanced)
-- **Admin User**: Configured with custom credentials
-- **Plugins**: Security-focused plugins installed
+---
 
 
-### Debug Commands
-
-```powershell
-# Check pod status and events
-kubectl describe pod -n jenkins jenkins-0
-kubectl get events -n jenkins
-
-# Check logs
-kubectl logs -n jenkins jenkins-0 -f
-
-# Check services
-kubectl describe svc -n jenkins jenkins
-
-# Check storage
-kubectl describe pvc -n jenkins jenkins
-```
-## Monitoring and Maintenance
-
-### Health Checks
-
-```powershell
-# Check overall cluster health
-kubectl get nodes
-kubectl get pods --all-namespaces
-
-# Check Jenkins specific health
-kubectl get pods -n jenkins
-kubectl get svc -n jenkins
-kubectl get pvc -n jenkins
-```
 ## Cleanup
 
-### Remove Jenkins
+To remove the deployed application and stop the cluster, run the following commands:
 
-```powershell
-# Uninstall Jenkins
-helm uninstall jenkins -n jenkins
+```sh
+# Uninstall the Helm release
+helm uninstall flask-app -n flask-app
 
-# Remove namespace
-kubectl delete namespace jenkins
-
-# Remove persistent volumes (optional)
-kubectl delete pv <pv-name>
-```
-
-### Stop Minikube
-
-```powershell
-# Stop cluster
+# Stop the Minikube cluster
 minikube stop
-
-# Delete cluster (removes all data)
-minikube delete
 ```
-
-## Additional Tasks Completed
-
-### ✅ Helm Installation and Verification (10 points)
-- Helm installed successfully
-- Verified by deploying and removing Nginx chart from Bitnami
-
-### ✅ Cluster Requirements (10 points) 
-- Minikube provides built-in storage provisioner
-- Persistent volumes and claims working correctly
-
-### ✅ Jenkins Installation (40 points)
-- Jenkins installed using Helm in separate `jenkins` namespace
-- Accessible via web browser at NodePort service
-- All containers running and healthy
-
-### ✅ Jenkins Configuration (10 points)
-- Jenkins configuration stored on persistent volume
-- Data persists when Jenkins pod is terminated
-- StatefulSet ensures proper volume mounting
-
-### ✅ Verification (15 points)
-- Hello World job created automatically via JCasC
-- Job runs successfully and outputs "Hello World from JCasC!"
-- Console output captured in screenshots
-
-### ✅ Additional Tasks (15 points)
-- **JCasC Implementation (5 points)**: Hello World job created via JCasC in Helm values
-- **Authentication and Security (5 points)**: Custom admin credentials and security plugins configured
-- **Documentation (5 points)**: Comprehensive README with troubleshooting and best practices
-
