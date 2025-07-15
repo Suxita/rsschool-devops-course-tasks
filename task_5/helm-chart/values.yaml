@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: flask-app
+  pullPolicy: Never 
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+     nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: flask-app.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+# Resource requests and limits
+resources:
+  limits:
+    cpu: 300m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
