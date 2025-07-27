@@ -1,0 +1,19 @@
+replicaCount: 2
+
+image:
+  repository: your-ecr-repo-url/spring-app # This will be overridden by Jenkins
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8081
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
